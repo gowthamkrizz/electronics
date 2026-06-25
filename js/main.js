@@ -28,13 +28,37 @@
       var open = navMain.classList.toggle('is-open');
       toggle.classList.toggle('is-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      document.body.classList.toggle('nav-locked', open);
+      
+      // Fix: Prevent body scroll when mobile nav is open
+      if (open) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = '-' + window.scrollY + 'px';
+        // Store scroll position to restore later
+        document.body.dataset.scrollY = window.scrollY;
+      } else {
+        var scrollY = parseInt(document.body.dataset.scrollY || '0');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        window.scrollTo(0, scrollY);
+      }
     });
+    
     navMain.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () {
         navMain.classList.remove('is-open');
         toggle.classList.remove('is-open');
-        document.body.classList.remove('nav-locked');
+        toggle.setAttribute('aria-expanded', 'false');
+        // Restore scroll when closing nav via link click
+        var scrollY = parseInt(document.body.dataset.scrollY || '0');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        window.scrollTo(0, scrollY);
       });
     });
   }

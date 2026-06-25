@@ -556,6 +556,24 @@
       color: rgba(236, 231, 216, 0.1);
     }
 
+    .form-group input.error {
+      border-color: #E06A6A;
+      box-shadow: 0 0 30px rgba(224, 106, 106, 0.1);
+    }
+
+    .form-group .error-message {
+      display: none;
+      font-size: 0.65rem;
+      color: #E06A6A;
+      font-family: var(--font-mono);
+      margin-top: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    .form-group .error-message.show {
+      display: block;
+    }
+
     .password-hint {
       font-size: 0.65rem;
       color: var(--line-green);
@@ -832,30 +850,34 @@
       Join <strong>Stackly</strong> and get access to real-time production tracking, DFM reviews, and instant quotes.
     </div>
 
-    <form id="signupForm">
+    <form id="signupForm" novalidate>
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="signupName" placeholder="Jane Doe" required>
+        <div class="error-message" id="nameError">Please enter your full name</div>
       </div>
       <div class="form-group">
         <label>Email Address</label>
         <input type="email" id="signupEmail" placeholder="you@company.com" required>
+        <div class="error-message" id="emailError">Please enter a valid email address (e.g., name@domain.com)</div>
       </div>
       <div class="form-group">
         <label>Password</label>
         <input type="password" id="signupPassword" placeholder="••••••••" required>
         <div class="password-hint">Min 8 characters · At least 1 number</div>
+        <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
       </div>
       <div class="form-group">
         <label>Confirm Password</label>
         <input type="password" id="signupConfirm" placeholder="••••••••" required>
+        <div class="error-message" id="confirmError">Passwords do not match</div>
       </div>
       <div class="role-selector">
         <label><input type="radio" name="signupRole" value="user" checked> <span>👤 User</span></label>
         <label><input type="radio" name="signupRole" value="admin"> <span>⚙️ Admin</span></label>
       </div>
       <button type="submit" class="btn-primary"><span>🚀 Create Account</span></button>
-      <div class="form-footer">By signing up you agree to our <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a>.</div>
+      <div class="form-footer">By signing up you agree to our <a href="404.html">Terms of Service</a> &amp; <a href="404.html">Privacy Policy</a>.</div>
     </form>
 
     <div class="login-link">Already have an account? <a href="login.html">Log in here</a></div>
@@ -870,23 +892,66 @@
   <script>
     document.getElementById('signupForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
+      
+      let isValid = true;
+      
+      // Get elements
+      const nameInput = document.getElementById('signupName');
+      const emailInput = document.getElementById('signupEmail');
+      const passwordInput = document.getElementById('signupPassword');
+      const confirmInput = document.getElementById('signupConfirm');
+      
+      const nameError = document.getElementById('nameError');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+      const confirmError = document.getElementById('confirmError');
+      
+      // Reset errors
+      [nameInput, emailInput, passwordInput, confirmInput].forEach(el => el.classList.remove('error'));
+      [nameError, emailError, passwordError, confirmError].forEach(el => el.classList.remove('show'));
+      
+      // Validate name
+      if (nameInput.value.trim() === '') {
+        nameInput.classList.add('error');
+        nameError.classList.add('show');
+        isValid = false;
+      }
+      
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput.value.trim())) {
+        emailInput.classList.add('error');
+        emailError.classList.add('show');
+        isValid = false;
+      }
+      
+      // Validate password
+      if (passwordInput.value.length < 8) {
+        passwordInput.classList.add('error');
+        passwordError.classList.add('show');
+        isValid = false;
+      }
+      
+      // Validate confirm password
+      if (passwordInput.value !== confirmInput.value || confirmInput.value === '') {
+        confirmInput.classList.add('error');
+        confirmError.classList.add('show');
+        isValid = false;
+      }
+      
+      if (!isValid) {
+        return;
+      }
+
+      // If valid, proceed with signup
+      const name = nameInput.value;
+      const email = emailInput.value.trim();
       localStorage.setItem('stacklyUserName', name);
       localStorage.setItem('stacklyUserEmail', email);
 
-      const password = document.getElementById('signupPassword').value;
-      const confirm = document.getElementById('signupConfirm').value;
-      if (password !== confirm) {
-        alert('Passwords do not match!');
-        return;
-      }
       const role = document.querySelector('input[name="signupRole"]:checked').value;
-      if (role === 'admin') {
-        window.location.href = 'login.html';
-      } else {
-        window.location.href = 'login.html';
-      }
+      localStorage.setItem('stacklyUserRole', role);
+      window.location.href = 'login.html';
     });
   </script>
 </body>
