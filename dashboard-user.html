@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+    <title>User Dashboard · Stackly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --ink: #0A0F0D;
+            --pine: #122019;
+            --pine-soft: #18271F;
+            --line-green: #5C8A6B;
+            --signal-green: #6FE0A0;
+            --copper: #C97C3D;
+            --copper-bright: #E0A062;
+            --cream: #ECE7D8;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --radius: 12px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body {
+            background: var(--ink);
+            color: var(--cream);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== INDUSTRIAL MESH BACKGROUND ===== */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .mesh-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 30% 30%, rgba(111, 224, 160, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(201, 124, 61, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(111, 224, 160, 0.02) 0%, transparent 70%);
+            background-size: 100% 100%;
+        }
+
+        .mesh-hexagons {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(111, 224, 160, 0.04) 49px,
+                    rgba(111, 224, 160, 0.04) 50px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(111, 224, 160, 0.04) 49px,
+                    rgba(111, 224, 160, 0.04) 50px
+                ),
+                repeating-linear-gradient(
+                    60deg,
+                    transparent,
+                    transparent 84px,
+                    rgba(201, 124, 61, 0.03) 84px,
+                    rgba(201, 124, 61, 0.03) 85px
+                ),
+                repeating-linear-gradient(
+                    -60deg,
+                    transparent,
+                    transparent 84px,
+                    rgba(201, 124, 61, 0.03) 84px,
+                    rgba(201, 124, 61, 0.03) 85px
+                );
+            background-size: 100px 100px, 100px 100px, 170px 170px, 170px 170px;
+            animation: hexPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes hexPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== ANIMATED GLOWING NODES ===== */
+        .nodes-container {
+            position: absolute;
+            inset: 0;
+        }
+
+        .node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--signal-green);
+            box-shadow: 0 0 20px rgba(111, 224, 160, 0.6), 0 0 60px rgba(111, 224, 160, 0.2);
+            animation: nodePulse 3s ease-in-out infinite;
+        }
+
+        .node:nth-child(1) { top: 12%; left: 8%; animation-delay: 0s; }
+        .node:nth-child(2) { top: 25%; left: 85%; animation-delay: 0.4s; background: var(--copper); box-shadow: 0 0 20px rgba(201, 124, 61, 0.6), 0 0 60px rgba(201, 124, 61, 0.2); }
+        .node:nth-child(3) { top: 55%; left: 5%; animation-delay: 0.8s; }
+        .node:nth-child(4) { top: 70%; left: 90%; animation-delay: 1.2s; background: var(--copper); box-shadow: 0 0 20px rgba(201, 124, 61, 0.6), 0 0 60px rgba(201, 124, 61, 0.2); }
+        .node:nth-child(5) { top: 40%; left: 50%; animation-delay: 1.6s; width: 12px; height: 12px; }
+        .node:nth-child(6) { top: 85%; left: 15%; animation-delay: 2s; }
+        .node:nth-child(7) { top: 10%; left: 50%; animation-delay: 2.4s; background: var(--copper); box-shadow: 0 0 20px rgba(201, 124, 61, 0.6), 0 0 60px rgba(201, 124, 61, 0.2); }
+        .node:nth-child(8) { top: 90%; left: 60%; animation-delay: 2.8s; }
+        .node:nth-child(9) { top: 45%; left: 20%; animation-delay: 0.2s; width: 6px; height: 6px; }
+        .node:nth-child(10) { top: 60%; left: 70%; animation-delay: 1s; width: 6px; height: 6px; }
+        .node:nth-child(11) { top: 30%; left: 30%; animation-delay: 0.6s; width: 5px; height: 5px; background: var(--copper); box-shadow: 0 0 20px rgba(201, 124, 61, 0.6), 0 0 60px rgba(201, 124, 61, 0.2); }
+        .node:nth-child(12) { top: 75%; left: 45%; animation-delay: 1.8s; width: 5px; height: 5px; }
+
+        @keyframes nodePulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.8); opacity: 1; }
+        }
+
+        /* ===== CONNECTED NETWORK LINES ===== */
+        .network-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .network-lines svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .network-lines line {
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            animation: linePulse 4s ease-in-out infinite;
+        }
+
+        .network-lines line:nth-child(1) { stroke: rgba(111, 224, 160, 0.15); animation-delay: 0s; }
+        .network-lines line:nth-child(2) { stroke: rgba(201, 124, 61, 0.12); animation-delay: 0.5s; }
+        .network-lines line:nth-child(3) { stroke: rgba(111, 224, 160, 0.1); animation-delay: 1s; }
+        .network-lines line:nth-child(4) { stroke: rgba(201, 124, 61, 0.12); animation-delay: 1.5s; }
+        .network-lines line:nth-child(5) { stroke: rgba(111, 224, 160, 0.08); animation-delay: 2s; }
+        .network-lines line:nth-child(6) { stroke: rgba(201, 124, 61, 0.1); animation-delay: 2.5s; }
+        .network-lines line:nth-child(7) { stroke: rgba(111, 224, 160, 0.12); animation-delay: 3s; }
+        .network-lines line:nth-child(8) { stroke: rgba(201, 124, 61, 0.08); animation-delay: 3.5s; }
+        .network-lines line:nth-child(9) { stroke: rgba(111, 224, 160, 0.06); animation-delay: 1.2s; }
+        .network-lines line:nth-child(10) { stroke: rgba(201, 124, 61, 0.09); animation-delay: 2.2s; }
+        .network-lines line:nth-child(11) { stroke: rgba(111, 224, 160, 0.07); animation-delay: 0.8s; }
+        .network-lines line:nth-child(12) { stroke: rgba(201, 124, 61, 0.11); animation-delay: 3.2s; }
+
+        @keyframes linePulse {
+            0%, 100% { opacity: 0.3; stroke-width: 1.5; }
+            50% { opacity: 1; stroke-width: 2.5; }
+        }
+
+        /* ===== GLASSMORPHISM CARDS ===== */
+        .card {
+            background: rgba(18, 32, 25, 0.55);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(236, 231, 216, 0.08);
+            border-radius: var(--radius);
+            padding: 1.4rem 1.6rem;
+            transition: all 0.4s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.5px;
+            background: linear-gradient(90deg, var(--copper), var(--signal-green));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(111, 224, 160, 0.06), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(111, 224, 160, 0.2);
+            box-shadow: 0 16px 48px -14px rgba(0, 0, 0, 0.6), 0 0 30px rgba(111, 224, 160, 0.05);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--line-green);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-family: var(--font-display);
+            color: var(--signal-green);
+        }
+
+        .card .change {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--copper-bright);
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ===== GLASS HEADER ===== */
+        .dashboard-header {
+            background: rgba(18, 32, 25, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(236, 231, 216, 0.06);
+            padding: 0.6rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .dashboard-header .inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 0.8rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--cream);
+        }
+
+        .brand__mark {
+            width: 26px;
+            height: 26px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--copper), var(--copper-bright));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--ink);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--line-green);
+            font-family: var(--font-mono);
+            display: none;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 600px) {
+            .user-email {
+                display: inline-block;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .user-email {
+                max-width: 220px;
+            }
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(236, 231, 216, 0.15);
+            color: var(--line-green);
+            padding: 0.4rem 1.2rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--signal-green);
+            color: var(--signal-green);
+            transform: scale(1.04);
+        }
+
+        /* ===== NAV MENU (Desktop) ===== */
+        .nav-menu {
+            display: flex;
+            gap: 0.3rem;
+            background: rgba(10, 15, 13, 0.3);
+            border-radius: 999px;
+            padding: 0.2rem 0.4rem;
+            border: 1px solid rgba(236, 231, 216, 0.06);
+        }
+
+        .nav-menu a {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            color: rgba(236, 231, 216, 0.6);
+            transition: all 0.25s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.is-active {
+            color: var(--cream);
+            background: rgba(201, 124, 61, 0.15);
+        }
+
+        /* ===== HAMBURGER TOGGLE ===== */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            z-index: 101;
+            margin-left: 0.5rem;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--cream);
+            border-radius: 2px;
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .hamburger.is-open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.is-open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger.is-open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ===== MOBILE MENU OVERLAY ===== */
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(8, 12, 10, 0.85);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            z-index: 99;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 2rem;
+            animation: fadeInMenu 0.3s var(--ease-out);
+        }
+
+        .mobile-menu-overlay.is-open {
+            display: flex;
+        }
+
+        @keyframes fadeInMenu {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .mobile-menu-overlay a {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.6rem 0;
+            transition: color 0.25s;
+            text-align: center;
+            width: 100%;
+            max-width: 280px;
+            opacity: 0;
+            transform: translateY(15px);
+            position: relative;
+        }
+
+        .mobile-menu-overlay.is-open a {
+            animation: slideUpLink 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .mobile-menu-overlay.is-open span:nth-child(1) { animation: slideUpLink 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation-delay: 0.05s; }
+        .mobile-menu-overlay.is-open a:nth-child(2) { animation-delay: 0.1s; }
+        .mobile-menu-overlay.is-open a:nth-child(3) { animation-delay: 0.15s; }
+        .mobile-menu-overlay.is-open a:nth-child(4) { animation-delay: 0.2s; }
+        .mobile-menu-overlay.is-open a:nth-child(5) { animation-delay: 0.25s; }
+        .mobile-menu-overlay.is-open a:nth-child(6) { animation-delay: 0.3s; }
+        .mobile-menu-overlay.is-open a:nth-child(7) { animation-delay: 0.35s; }
+
+        @keyframes slideUpLink {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mobile-menu-overlay a:hover,
+        .mobile-menu-overlay a.is-active {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .mobile-menu-overlay a.is-active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--signal-green);
+            border-radius: 2px;
+        }
+
+        .mobile-menu-overlay .mobile-email {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--line-green);
+            margin-bottom: 0.5rem;
+            text-align: center;
+            word-break: break-all;
+            max-width: 280px;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .mobile-menu-overlay .mobile-logout {
+            margin-top: 1rem;
+        }
+
+        /* ===== RESPONSIVE: show hamburger ===== */
+        @media (max-width: 880px) {
+            .nav-menu {
+                display: none;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .user-email {
+                display: none;
+            }
+            .dashboard-header .inner {
+                gap: 0.4rem;
+            }
+        }
+
+        /* ===== PAGE SECTIONS ===== */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s var(--ease-out);
+        }
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== WELCOME BANNER ===== */
+        .welcome-banner {
+            background: rgba(18, 32, 25, 0.4);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border-radius: var(--radius);
+            padding: 1.8rem 2.2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(236, 231, 216, 0.06);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .welcome-banner h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+        }
+
+        .welcome-banner p {
+            color: var(--line-green);
+        }
+
+        /* ===== DASHBOARD GRID ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.8rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .half-width {
+            grid-column: span 2;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 220px;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .chart-container-sm {
+            height: 180px;
+        }
+        .chart-container-md {
+            height: 240px;
+        }
+
+        /* ===== TABLE ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--line-green);
+            padding: 0.7rem 0.3rem;
+            border-bottom: 1px solid rgba(236, 231, 216, 0.06);
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            padding: 0.7rem 0.3rem;
+            border-bottom: 1px solid rgba(236, 231, 216, 0.03);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(111, 224, 160, 0.15);
+            color: var(--signal-green);
+        }
+        .status-badge.pending {
+            background: rgba(201, 124, 61, 0.15);
+            color: var(--copper-bright);
+        }
+        .status-badge.completed {
+            background: rgba(92, 138, 107, 0.2);
+            color: var(--line-green);
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+
+        .quick-actions a {
+            background: rgba(201, 124, 61, 0.12);
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--cream);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .quick-actions a:hover {
+            background: rgba(201, 124, 61, 0.25);
+            border-color: var(--copper);
+            transform: translateY(-3px);
+        }
+
+        /* ===== ACTIVITY ITEMS ===== */
+        .activity-item {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(236, 231, 216, 0.04);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-item .time {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--line-green);
+            margin-left: auto;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .half-width {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .half-width {
+                grid-column: 1;
+            }
+            .welcome-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1.2rem 1.5rem;
+            }
+            .welcome-banner h1 {
+                font-size: 1.4rem;
+            }
+            .card {
+                padding: 1rem 1.2rem;
+            }
+            .card .value {
+                font-size: 1.6rem;
+            }
+            .chart-container {
+                height: 180px;
+            }
+            .chart-container-md {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 0.8rem;
+            }
+            .user-menu .btn-logout {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.6rem;
+            }
+            .brand {
+                font-size: 0.95rem;
+            }
+            .brand__mark {
+                width: 22px;
+                height: 22px;
+            }
+            .welcome-banner {
+                padding: 1rem 1.2rem;
+            }
+        }
+
+        [data-aos] {
+            pointer-events: none;
+        }
+        [data-aos].aos-animate {
+            pointer-events: auto;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-wrap table {
+            min-width: 500px;
+        }
+
+        @media (max-width: 600px) {
+            .table-wrap table {
+                min-width: 400px;
+                font-size: 0.8rem;
+            }
+            .table-wrap th,
+            .table-wrap td {
+                padding: 0.4rem 0.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== INDUSTRIAL MESH BACKGROUND ===== -->
+    <div class="mesh-bg">
+        <div class="mesh-pattern"></div>
+        <div class="mesh-hexagons"></div>
+
+        <!-- Glowing Nodes -->
+        <div class="nodes-container">
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+        </div>
+
+        <!-- Network Lines -->
+        <svg class="network-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <line x1="8" y1="12" x2="25" y2="85" />
+            <line x1="8" y1="12" x2="50" y2="40" />
+            <line x1="25" y1="85" x2="50" y2="40" />
+            <line x1="25" y1="85" x2="85" y2="70" />
+            <line x1="50" y1="40" x2="85" y2="25" />
+            <line x1="85" y1="25" x2="90" y2="90" />
+            <line x1="85" y1="70" x2="90" y2="90" />
+            <line x1="50" y1="40" x2="90" y2="90" />
+            <line x1="8" y1="12" x2="50" y2="10" />
+            <line x1="50" y1="10" x2="85" y2="25" />
+            <line x1="15" y1="90" x2="25" y2="85" />
+            <line x1="15" y1="90" x2="50" y2="40" />
+            <line x1="30" y1="30" x2="85" y2="70" />
+            <line x1="75" y1="45" x2="50" y2="10" />
+        </svg>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="dashboard-header">
+        <div class="container inner">
+            <a href="index.html" class="brand">
+                <img src="logo.webp" alt="Stackly Logo" class="logo-img" style="height: 40px; width: auto; object-fit: contain;">
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="nav-menu" id="userNavMenu">
+                <a class="is-active" data-section="dashboard">Dashboard</a>
+                <a data-section="orders">My Orders</a>
+                <a data-section="quality">Quality</a>
+                <a data-section="projects">Projects</a>
+                <a data-section="support">Support</a>
+            </nav>
+
+            <div class="user-menu">
+                <span class="user-email" id="userEmailDisplay">user@example.com</span>
+                <div class="user-avatar" id="userAvatar">US</div>
+                <a href="login.html" class="btn-logout">Logout</a>
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MOBILE MENU OVERLAY ===== -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <span class="mobile-email" id="mobileUserEmail">user@example.com</span>
+        <a class="is-active" data-section="dashboard" onclick="navigateTo('dashboard')">Dashboard</a>
+        <a data-section="orders" onclick="navigateTo('orders')">My Orders</a>
+        <a data-section="quality" onclick="navigateTo('quality')">Quality</a>
+        <a data-section="projects" onclick="navigateTo('projects')">Projects</a>
+        <a data-section="support" onclick="navigateTo('support')">Support</a>
+        <a href="login.html" class="mobile-logout" style="font-family:var(--font-mono);font-size:0.9rem;color:var(--copper-bright);">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top:6rem;padding-bottom:4rem;">
+
+        <!-- ===== SECTION: DASHBOARD ===== -->
+        <div class="page-section active" id="section-dashboard">
+            <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
+                <div>
+                    <h1>👋 Welcome back, <span id="userNameDisplay">User</span></h1>
+                    <p>Your personal manufacturing quality &amp; project insights</p>
+                </div>
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">ACTIVE ORDERS</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--signal-green);">3</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">COMPLETED</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--signal-green);">14</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">QUALITY SCORE</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--copper-bright);">97.8</div></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="50"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📦 Active Orders</h3>
+                    <div class="value">3</div>
+                    <div class="change">2 in production</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>✅ Pass Rate</h3>
+                    <div class="value">98.2%</div>
+                    <div class="change">↑ 0.5% vs last month</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="150"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚠️ Defect Rate</h3>
+                    <div class="value">1.8%</div>
+                    <div class="change">↓ 0.3% improvement</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📊 Quality Score</h3>
+                    <div class="value">97.8</div>
+                    <div class="change">↑ 0.9 points</div>
+                </div>
+
+                <div class="card half-width" data-aos="fade-up" data-aos-delay="250"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🍩 Pass / Fail Ratio</h3>
+                    <div class="chart-container chart-container-sm">
+                        <canvas id="userDoughnut"></canvas>
+                    </div>
+                </div>
+
+                <div class="card half-width" data-aos="fade-up" data-aos-delay="300"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📈 Defect Rate Trend (30 days)</h3>
+                    <div class="chart-container chart-container-sm">
+                        <canvas id="userArea"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="350"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📊 Monthly Quality Score</h3>
+                    <div class="chart-container chart-container-md">
+                        <canvas id="userLine"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="400"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🔬 Product Testing Results (by batch)</h3>
+                    <div class="chart-container chart-container-md">
+                        <canvas id="userBar"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="450"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚡ Quick Actions</h3>
+                    <div class="quick-actions">
+                        <a onclick="navigateTo('orders')">New Quote</a>
+                        <a onclick="navigateTo('orders')">Upload Gerbers</a>
+                        <a onclick="navigateTo('projects')">View All Projects</a>
+                        <a onclick="navigateTo('support')">Contact Support</a>
+                        <a onclick="navigateTo('orders')">Track Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: ORDERS ===== -->
+        <div class="page-section" id="section-orders">
+            <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
+                <div>
+                    <h1>📦 My Orders</h1>
+                    <p>Track your active and completed orders</p>
+                </div>
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">ACTIVE</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--signal-green);">3</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">PENDING</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--copper-bright);">2</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">COMPLETED</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--line-green);">14</div></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="50"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📦 Total Orders</h3>
+                    <div class="value">19</div>
+                    <div class="change">↑ 3 this quarter</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⏳ In Production</h3>
+                    <div class="value">2</div>
+                    <div class="change">1 this week</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="150"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📋 Awaiting Approval</h3>
+                    <div class="value">1</div>
+                    <div class="change">DFM review</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>✅ Completed</h3>
+                    <div class="value">14</div>
+                    <div class="change">This year</div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📋 My Orders</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Project</th><th>Status</th><th>Date</th><th>Units</th></tr></thead>
+                            <tbody>
+                                <tr><td>Patient Monitor Mainboard</td><td><span class="status-badge active">Active</span></td><td>Jun 15</td><td>250</td></tr>
+                                <tr><td>Conveyor Control Module</td><td><span class="status-badge pending">Pending</span></td><td>Jun 10</td><td>100</td></tr>
+                                <tr><td>Avionics Sensor Interface</td><td><span class="status-badge completed">Completed</span></td><td>May 28</td><td>45</td></tr>
+                                <tr><td>Infusion Pump Controller</td><td><span class="status-badge active">Active</span></td><td>Jun 12</td><td>320</td></tr>
+                                <tr><td>Power Distribution Unit</td><td><span class="status-badge pending">Pending</span></td><td>Jun 14</td><td>180</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚡ Order Actions</h3>
+                    <div class="quick-actions">
+                        <a onclick="navigateTo('orders')">Create New Order</a>
+                        <a onclick="navigateTo('projects')">View All Projects</a>
+                        <a onclick="navigateTo('dashboard')">Track Shipment</a>
+                        <a onclick="navigateTo('support')">Contact Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: QUALITY ===== -->
+        <div class="page-section" id="section-quality">
+            <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
+                <div>
+                    <h1>✅ My Quality Metrics</h1>
+                    <p>Track your personal quality performance and inspection results</p>
+                </div>
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">PASS RATE</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--signal-green);">98.2%</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">DEFECTS</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--copper-bright);">1.8%</div></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="50"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>✅ Pass Rate</h3>
+                    <div class="value">98.2%</div>
+                    <div class="change">↑ 0.5% vs last month</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚠️ Defect Rate</h3>
+                    <div class="value">1.8%</div>
+                    <div class="change">↓ 0.3% improvement</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="150"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🔍 Inspections</h3>
+                    <div class="value">1,240</div>
+                    <div class="change">100% coverage</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📊 Quality Score</h3>
+                    <div class="value">97.8</div>
+                    <div class="change">↑ 0.9 points</div>
+                </div>
+
+                <div class="card half-width" data-aos="fade-up" data-aos-delay="250"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🍩 Pass / Fail Ratio</h3>
+                    <div class="chart-container chart-container-sm">
+                        <canvas id="userDoughnut2"></canvas>
+                    </div>
+                </div>
+
+                <div class="card half-width" data-aos="fade-up" data-aos-delay="300"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📈 Defect Rate Trend</h3>
+                    <div class="chart-container chart-container-sm">
+                        <canvas id="userArea2"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="350"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📊 Monthly Quality Score</h3>
+                    <div class="chart-container chart-container-md">
+                        <canvas id="userLine2"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="400"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🔬 Product Testing Results</h3>
+                    <div class="chart-container chart-container-md">
+                        <canvas id="userBar2"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: PROJECTS ===== -->
+        <div class="page-section" id="section-projects">
+            <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
+                <div>
+                    <h1>📁 My Projects</h1>
+                    <p>All your active and completed projects</p>
+                </div>
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">ACTIVE</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--signal-green);">4</div></div>
+                    <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">COMPLETED</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--line-green);">10</div></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="50"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📁 Active Projects</h3>
+                    <div class="value">4</div>
+                    <div class="change">2 in production</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📋 In Review</h3>
+                    <div class="value">1</div>
+                    <div class="change">DFM check</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="150"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>✅ Completed</h3>
+                    <div class="value">10</div>
+                    <div class="change">This year</div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📊 Total Components</h3>
+                    <div class="value">12.4K</div>
+                    <div class="change">Placed in 2026</div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📋 Project Timeline</h3>
+                    <div style="margin-top:0.8rem;">
+                        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(236,231,216,0.04);">
+                            <span>Patient Monitor</span>
+                            <span style="color:var(--signal-green);">● In Production</span>
+                            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--line-green);">Due Jul 5</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(236,231,216,0.04);">
+                            <span>Conveyor Module</span>
+                            <span style="color:var(--copper-bright);">● DFM Review</span>
+                            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--line-green);">Due Jun 28</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(236,231,216,0.04);">
+                            <span>Infusion Pump</span>
+                            <span style="color:var(--signal-green);">● In Production</span>
+                            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--line-green);">Due Jul 12</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;">
+                            <span>Avionics Sensor</span>
+                            <span style="color:var(--line-green);">● Completed</span>
+                            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--line-green);">May 28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚡ Project Actions</h3>
+                    <div class="quick-actions">
+                        <a onclick="navigateTo('orders')">Start New Project</a>
+                        <a onclick="navigateTo('orders')">Upload Gerbers</a>
+                        <a onclick="navigateTo('dashboard')">View Analytics</a>
+                        <a onclick="navigateTo('support')">Request Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: SUPPORT ===== -->
+        <div class="page-section" id="section-support">
+            <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
+                <div>
+                    <h1>🛠️ Support Center</h1>
+                    <p>Get help with your orders, projects, and technical questions</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="50"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📧 Contact Support</h3>
+                    <div style="margin-top:0.5rem;">
+                        <p style="color:var(--line-green);">Email: support@stackly.com</p>
+                        <p style="color:var(--line-green);">Response time: &lt; 4 hours</p>
+                        <div class="quick-actions" style="margin-top:0.8rem;">
+                            <a onclick="alert('Email support opened')">Send Email</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📚 Knowledge Base</h3>
+                    <div style="margin-top:0.5rem;">
+                        <p style="color:var(--line-green);">Articles: <span style="color:var(--signal-green);">24</span></p>
+                        <p style="color:var(--line-green);">Guides: <span style="color:var(--signal-green);">12</span></p>
+                        <div class="quick-actions" style="margin-top:0.8rem;">
+                            <a onclick="alert('Knowledge base opened')">Browse Articles</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="150"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>🎥 Video Tutorials</h3>
+                    <div style="margin-top:0.5rem;">
+                        <p style="color:var(--line-green);">Tutorials: <span style="color:var(--signal-green);">8</span></p>
+                        <p style="color:var(--line-green);">Webinars: <span style="color:var(--signal-green);">4</span></p>
+                        <div class="quick-actions" style="margin-top:0.8rem;">
+                            <a onclick="alert('Video tutorials opened')">Watch Videos</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>💬 Live Chat</h3>
+                    <div style="margin-top:0.5rem;">
+                        <p style="color:var(--line-green);">Status: <span style="color:var(--signal-green);">Online</span></p>
+                        <p style="color:var(--line-green);">Avg wait: &lt; 2 min</p>
+                        <div class="quick-actions" style="margin-top:0.8rem;">
+                            <a onclick="alert('Live chat opened')">Start Chat</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>📋 Recent Support Tickets</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Ticket</th><th>Subject</th><th>Status</th><th>Updated</th></tr></thead>
+                            <tbody>
+                                <tr><td>#T-1024</td><td>Component availability issue</td><td><span class="status-badge active">In Progress</span></td><td>Jun 15</td></tr>
+                                <tr><td>#T-1023</td><td>DFM review question</td><td><span class="status-badge completed">Resolved</span></td><td>Jun 12</td></tr>
+                                <tr><td>#T-1022</td><td>Shipping address update</td><td><span class="status-badge pending">Pending</span></td><td>Jun 10</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
+                     onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
+                    <h3>⚡ Support Actions</h3>
+                    <div class="quick-actions">
+                        <a onclick="alert('New ticket form opened')">Create New Ticket</a>
+                        <a onclick="alert('Knowledge base opened')">Search Help Articles</a>
+                        <a onclick="alert('Feedback form opened')">Submit Feedback</a>
+                        <a onclick="alert('Phone support info shown')">Call Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ===== GET LOGGED-IN EMAIL FROM URL PARAMETER OR localStorage =====
+        function getLoggedInEmail() {
+            const params = new URLSearchParams(window.location.search);
+            const emailFromUrl = params.get('email');
+            if (emailFromUrl) {
+                const decoded = decodeURIComponent(emailFromUrl);
+                localStorage.setItem('stackly_user_email', decoded);
+                return decoded;
+            }
+            const stored = localStorage.getItem('stackly_user_email');
+            if (stored) return stored;
+            return 'user@example.com';
+        }
+
+        const userEmail = getLoggedInEmail();
+
+        function getNameFromEmail(email) {
+            const parts = email.split('@');
+            if (parts.length > 0) {
+                const name = parts[0].replace(/[._-]/g, ' ');
+                return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+            return 'User';
+        }
+
+        const userName = getNameFromEmail(userEmail);
+
+        document.querySelectorAll('.user-email, .mobile-email').forEach(el => {
+            if (el) el.textContent = userEmail;
+        });
+
+        const nameSpan = document.getElementById('userNameDisplay');
+        if (nameSpan) nameSpan.textContent = userName;
+
+        const avatar = document.getElementById('userAvatar');
+        if (avatar) {
+            const localPart = userEmail.split('@')[0];
+            const initials = localPart.substring(0, 2).toUpperCase();
+            avatar.textContent = initials;
+        }
+
+        // ===== NAVIGATION =====
+        function navigateTo(sectionId) {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.toggle('is-active', link.dataset.section === sectionId);
+            });
+            document.querySelectorAll('.mobile-menu-overlay a[data-section]').forEach(link => {
+                link.classList.toggle('is-active', link.dataset.section === sectionId);
+            });
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.toggle('active', section.id === 'section-' + sectionId);
+            });
+            closeMobileMenu();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== MOBILE MENU =====
+        const hamburger = document.getElementById('hamburgerBtn');
+        const mobileOverlay = document.getElementById('mobileMenuOverlay');
+
+        function toggleMobileMenu() {
+            const isOpen = mobileOverlay.classList.toggle('is-open');
+            hamburger.classList.toggle('is-open', isOpen);
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        }
+
+        function closeMobileMenu() {
+            mobileOverlay.classList.remove('is-open');
+            hamburger.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        hamburger.addEventListener('click', toggleMobileMenu);
+
+        document.querySelectorAll('.mobile-menu-overlay a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') && this.getAttribute('href').includes('login')) return;
+                e.preventDefault();
+                const section = this.dataset.section;
+                if (section) navigateTo(section);
+            });
+        });
+
+        mobileOverlay.addEventListener('click', function(e) {
+            if (e.target === this) closeMobileMenu();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMobileMenu();
+        });
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+
+            function raf(time) { lenis.raf(time);
+                requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            AOS.init({ once: false, mirror: false, duration: 700, offset: 20, easing: 'ease-out-cubic' });
+
+            // ===== CHARTS =====
+            const chartColors = {
+                green: '#6FE0A0',
+                copper: '#C97C3D',
+                copperBright: '#E0A062',
+                lineGreen: '#5C8A6B',
+                cream: '#ECE7D8',
+                red: '#E06A6A'
+            };
+
+            function createDoughnut(id, pass, fail) {
+                const ctx = document.getElementById(id);
+                if (!ctx) return;
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pass', 'Fail'],
+                        datasets: [{ data: [pass, fail], backgroundColor: [chartColors.green, chartColors.red],
+                            borderColor: 'rgba(10,15,13,0.8)', borderWidth: 2 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: chartColors
+                                    .cream, font: { family: 'IBM Plex Mono', size: 11 } } } }, cutout: '65%' }
+                });
+            }
+
+            function createArea(id, data) {
+                const ctx = document.getElementById(id);
+                if (!ctx) return;
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+                        datasets: [{ label: 'Defect Rate %', data: data || [2.2, 2.0, 2.5, 1.8, 1.6, 1.9, 1.5,
+                                1.8
+                            ], backgroundColor: 'rgba(111,224,160,0.2)', borderColor: chartColors.green,
+                            borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: chartColors.copper,
+                            pointRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: chartColors
+                                    .cream, font: { family: 'IBM Plex Mono', size: 10 } } } }, scales: { x: { ticks: { color: chartColors
+                                        .lineGreen, font: { size: 10 } }, grid: { color: 'rgba(236,231,216,0.05)' } },
+                            y: { ticks: { color: chartColors.lineGreen, font: { size: 10 } }, grid: { color: 'rgba(236,231,216,0.05)' },
+                                min: 0, max: 3.5 } } }
+                });
+            }
+
+            function createLine(id, data, target) {
+                const ctx = document.getElementById(id);
+                if (!ctx) return;
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Quality Score',
+                            data: data || [92, 93, 94, 93.5, 95, 94.8, 96, 96.5, 97, 97.2, 97.5, 97.8],
+                            borderColor: chartColors.copper,
+                            backgroundColor: 'rgba(201,124,61,0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: chartColors.copperBright,
+                            pointRadius: 5,
+                        }, {
+                            label: 'Target',
+                            data: Array(12).fill(target || 96),
+                            borderColor: chartColors.lineGreen,
+                            borderWidth: 2,
+                            borderDash: [6, 4],
+                            fill: false,
+                            pointRadius: 0,
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: chartColors
+                                    .cream, font: { family: 'IBM Plex Mono', size: 10 } } } }, scales: { x: { ticks: { color: chartColors
+                                        .lineGreen, font: { size: 10 } }, grid: { color: 'rgba(236,231,216,0.05)' } },
+                            y: { ticks: { color: chartColors.lineGreen, font: { size: 10 } }, grid: { color: 'rgba(236,231,216,0.05)' },
+                                min: 88, max: 100 } } }
+                });
+            }
+
+            function createBar(id, labels, data1, data2) {
+                const ctx = document.getElementById(id);
+                if (!ctx) return;
+                new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels || ['Batch A', 'Batch B', 'Batch C', 'Batch D', 'Batch E'],
+                        datasets: [{ label: 'Passed', data: data1 || [120, 135, 128, 140, 130],
+                            backgroundColor: chartColors.green, borderRadius: 4 }, { label: 'Failed', data: data2 ||
+                                [8, 5, 10, 4, 7], backgroundColor: chartColors.red, borderRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: chartColors
+                                    .cream, font: { family: 'IBM Plex Mono', size: 10 } } } }, scales: { x: { ticks: { color: chartColors
+                                        .lineGreen, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: chartColors
+                                        .lineGreen, font: { size: 10 } }, grid: { color: 'rgba(236,231,216,0.05)' } } } }
+                });
+            }
+
+            createDoughnut('userDoughnut', 98.2, 1.8);
+            createDoughnut('userDoughnut2', 98.2, 1.8);
+            createArea('userArea', [2.2, 2.0, 2.5, 1.8, 1.6, 1.9, 1.5, 1.8]);
+            createArea('userArea2', [2.2, 2.0, 2.5, 1.8, 1.6, 1.9, 1.5, 1.8]);
+            createLine('userLine', [92, 93, 94, 93.5, 95, 94.8, 96, 96.5, 97, 97.2, 97.5, 97.8], 96);
+            createLine('userLine2', [92, 93, 94, 93.5, 95, 94.8, 96, 96.5, 97, 97.2, 97.5, 97.8], 96);
+            createBar('userBar', ['Batch A', 'Batch B', 'Batch C', 'Batch D', 'Batch E'], [120, 135, 128, 140, 130], [8, 5,
+                10, 4, 7
+            ]);
+            createBar('userBar2', ['Batch A', 'Batch B', 'Batch C', 'Batch D', 'Batch E'], [120, 135, 128, 140, 130], [8, 5,
+                10, 4, 7
+            ]);
+
+            // Magnetic hover effects
+            document.querySelectorAll('.btn-logout, .quick-actions a, .nav-menu a, .mobile-menu-overlay a').forEach(el => {
+                if (window.matchMedia('(pointer: fine)').matches && !el.closest('.mobile-menu-overlay')) {
+                    el.addEventListener('mousemove', function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        this.style.transform = `translate(${x*0.08}px, ${y*0.08}px)`;
+                    });
+                    el.addEventListener('mouseleave', function() { this.style.transform = ''; });
+                }
+            });
+
+            // Desktop nav click handlers
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navigateTo(this.dataset.section);
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userName = localStorage.getItem('stacklyUserName') || 'User';
+            const userEmail = localStorage.getItem('stacklyUserEmail') || 'user@example.com';
+            const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+            const emailDisplays = document.querySelectorAll('#userEmailDisplay, #mobileUserEmail');
+            emailDisplays.forEach(el => el.textContent = userEmail);
+
+            const avatarDisplays = document.querySelectorAll('#userAvatar');
+            avatarDisplays.forEach(el => el.textContent = initials);
+
+            const nameDisplays = document.querySelectorAll('#userNameDisplay');
+            nameDisplays.forEach(el => el.textContent = userName);
+        });
+    </script>
+
+</body>
+</html>
