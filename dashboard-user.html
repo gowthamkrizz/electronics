@@ -40,7 +40,6 @@
             min-height: 100vh;
         }
 
-        /* ===== INDUSTRIAL MESH BACKGROUND ===== */
         .mesh-bg {
             position: fixed;
             top: 0;
@@ -103,7 +102,6 @@
             50% { opacity: 1; }
         }
 
-        /* ===== ANIMATED GLOWING NODES ===== */
         .nodes-container {
             position: absolute;
             inset: 0;
@@ -137,7 +135,6 @@
             50% { transform: scale(1.8); opacity: 1; }
         }
 
-        /* ===== CONNECTED NETWORK LINES ===== */
         .network-lines {
             position: absolute;
             inset: 0;
@@ -173,7 +170,6 @@
             50% { opacity: 1; stroke-width: 2.5; }
         }
 
-        /* ===== GLASSMORPHISM CARDS ===== */
         .card {
             background: rgba(18, 32, 25, 0.55);
             backdrop-filter: blur(16px) saturate(180%);
@@ -257,7 +253,6 @@
             text-decoration: none;
         }
 
-        /* ===== GLASS HEADER ===== */
         .dashboard-header {
             background: rgba(18, 32, 25, 0.6);
             backdrop-filter: blur(20px) saturate(180%);
@@ -288,11 +283,7 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--cream);
-        }
-
-        .brand__mark {
-            width: 26px;
-            height: 26px;
+            cursor: pointer;
         }
 
         .user-menu {
@@ -332,12 +323,6 @@
             }
         }
 
-        @media (min-width: 900px) {
-            .user-email {
-                max-width: 220px;
-            }
-        }
-
         .btn-logout {
             background: transparent;
             border: 1px solid rgba(236, 231, 216, 0.15);
@@ -357,7 +342,6 @@
             transform: scale(1.04);
         }
 
-        /* ===== NAV MENU (Desktop) ===== */
         .nav-menu {
             display: flex;
             gap: 0.3rem;
@@ -386,7 +370,6 @@
             background: rgba(201, 124, 61, 0.15);
         }
 
-        /* ===== HAMBURGER TOGGLE ===== */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -419,7 +402,6 @@
             transform: rotate(-45deg) translate(5px, -5px);
         }
 
-        /* ===== MOBILE MENU OVERLAY ===== */
         .mobile-menu-overlay {
             display: none;
             position: fixed;
@@ -512,7 +494,6 @@
             margin-top: 1rem;
         }
 
-        /* ===== RESPONSIVE: show hamburger ===== */
         @media (max-width: 880px) {
             .nav-menu {
                 display: none;
@@ -528,7 +509,6 @@
             }
         }
 
-        /* ===== PAGE SECTIONS ===== */
         .page-section {
             display: none;
             animation: fadeIn 0.4s var(--ease-out);
@@ -542,7 +522,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== WELCOME BANNER ===== */
         .welcome-banner {
             background: rgba(18, 32, 25, 0.4);
             backdrop-filter: blur(12px) saturate(160%);
@@ -568,7 +547,6 @@
             color: var(--line-green);
         }
 
-        /* ===== DASHBOARD GRID ===== */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -596,7 +574,6 @@
             height: 240px;
         }
 
-        /* ===== TABLE ===== */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -642,7 +619,6 @@
             color: var(--line-green);
         }
 
-        /* ===== QUICK ACTIONS ===== */
         .quick-actions {
             display: flex;
             gap: 0.8rem;
@@ -661,6 +637,7 @@
             transition: all 0.3s;
             border: 1px solid transparent;
             cursor: pointer;
+            display: inline-block;
         }
 
         .quick-actions a:hover {
@@ -669,7 +646,6 @@
             transform: translateY(-3px);
         }
 
-        /* ===== ACTIVITY ITEMS ===== */
         .activity-item {
             padding: 0.6rem 0;
             border-bottom: 1px solid rgba(236, 231, 216, 0.04);
@@ -688,7 +664,6 @@
             margin-left: auto;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .dashboard-grid {
                 grid-template-columns: 1fr 1fr;
@@ -738,10 +713,6 @@
             .brand {
                 font-size: 0.95rem;
             }
-            .brand__mark {
-                width: 22px;
-                height: 22px;
-            }
             .welcome-banner {
                 padding: 1rem 1.2rem;
             }
@@ -772,16 +743,23 @@
                 padding: 0.4rem 0.2rem;
             }
         }
+
+        /* All clickable elements will show pointer cursor and have 404 redirect */
+        .clickable-404 {
+            cursor: pointer;
+        }
+        
+        /* Make sure all buttons and links have pointer cursor */
+        .quick-actions a, .btn-logout, .nav-menu a, .mobile-menu-overlay a {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ===== INDUSTRIAL MESH BACKGROUND ===== -->
     <div class="mesh-bg">
         <div class="mesh-pattern"></div>
         <div class="mesh-hexagons"></div>
-
-        <!-- Glowing Nodes -->
         <div class="nodes-container">
             <div class="node"></div>
             <div class="node"></div>
@@ -796,8 +774,6 @@
             <div class="node"></div>
             <div class="node"></div>
         </div>
-
-        <!-- Network Lines -->
         <svg class="network-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
             <line x1="8" y1="12" x2="25" y2="85" />
             <line x1="8" y1="12" x2="50" y2="40" />
@@ -816,14 +792,11 @@
         </svg>
     </div>
 
-    <!-- ===== HEADER ===== -->
     <header class="dashboard-header">
         <div class="container inner">
-            <a href="index.html" class="brand">
+            <a href="index.html" class="brand" id="brandLink">
                 <img src="logo.webp" alt="Stackly Logo" class="logo-img" style="height: 40px; width: auto; object-fit: contain;">
             </a>
-
-            <!-- Desktop Nav -->
             <nav class="nav-menu" id="userNavMenu">
                 <a class="is-active" data-section="dashboard">Dashboard</a>
                 <a data-section="orders">My Orders</a>
@@ -831,11 +804,10 @@
                 <a data-section="projects">Projects</a>
                 <a data-section="support">Support</a>
             </nav>
-
             <div class="user-menu">
                 <span class="user-email" id="userEmailDisplay">user@example.com</span>
                 <div class="user-avatar" id="userAvatar">US</div>
-                <a href="login.html" class="btn-logout">Logout</a>
+                <a href="login.html" class="btn-logout" id="logoutBtn">Logout</a>
                 <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -843,20 +815,18 @@
         </div>
     </header>
 
-    <!-- ===== MOBILE MENU OVERLAY ===== -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay">
         <span class="mobile-email" id="mobileUserEmail">user@example.com</span>
-        <a class="is-active" data-section="dashboard" onclick="navigateTo('dashboard')">Dashboard</a>
-        <a data-section="orders" onclick="navigateTo('orders')">My Orders</a>
-        <a data-section="quality" onclick="navigateTo('quality')">Quality</a>
-        <a data-section="projects" onclick="navigateTo('projects')">Projects</a>
-        <a data-section="support" onclick="navigateTo('support')">Support</a>
+        <a class="is-active" data-section="dashboard">Dashboard</a>
+        <a data-section="orders">My Orders</a>
+        <a data-section="quality">Quality</a>
+        <a data-section="projects">Projects</a>
+        <a data-section="support">Support</a>
         <a href="login.html" class="mobile-logout" style="font-family:var(--font-mono);font-size:0.9rem;color:var(--copper-bright);">Logout</a>
     </div>
 
     <main class="container" style="padding-top:6rem;padding-bottom:4rem;">
 
-        <!-- ===== SECTION: DASHBOARD ===== -->
         <div class="page-section active" id="section-dashboard">
             <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
                 <div>
@@ -895,7 +865,6 @@
                     <div class="value">97.8</div>
                     <div class="change">↑ 0.9 points</div>
                 </div>
-
                 <div class="card half-width" data-aos="fade-up" data-aos-delay="250"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>🍩 Pass / Fail Ratio</h3>
@@ -903,7 +872,6 @@
                         <canvas id="userDoughnut"></canvas>
                     </div>
                 </div>
-
                 <div class="card half-width" data-aos="fade-up" data-aos-delay="300"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📈 Defect Rate Trend (30 days)</h3>
@@ -911,7 +879,6 @@
                         <canvas id="userArea"></canvas>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="350"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📊 Monthly Quality Score</h3>
@@ -919,7 +886,6 @@
                         <canvas id="userLine"></canvas>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="400"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>🔬 Product Testing Results (by batch)</h3>
@@ -927,22 +893,20 @@
                         <canvas id="userBar"></canvas>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="450"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>⚡ Quick Actions</h3>
                     <div class="quick-actions">
-                        <a onclick="navigateTo('orders')">New Quote</a>
-                        <a onclick="navigateTo('orders')">Upload Gerbers</a>
-                        <a onclick="navigateTo('projects')">View All Projects</a>
-                        <a onclick="navigateTo('support')">Contact Support</a>
-                        <a onclick="navigateTo('orders')">Track Orders</a>
+                        <a class="action-404">New Quote</a>
+                        <a class="action-404">Upload Gerbers</a>
+                        <a class="action-404">View All Projects</a>
+                        <a class="action-404">Contact Support</a>
+                        <a class="action-404">Track Orders</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ===== SECTION: ORDERS ===== -->
         <div class="page-section" id="section-orders">
             <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
                 <div>
@@ -955,7 +919,6 @@
                     <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">COMPLETED</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--line-green);">14</div></div>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card" data-aos="fade-up" data-aos-delay="50"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
@@ -981,7 +944,6 @@
                     <div class="value">14</div>
                     <div class="change">This year</div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📋 My Orders</h3>
@@ -998,21 +960,19 @@
                         </table>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>⚡ Order Actions</h3>
                     <div class="quick-actions">
-                        <a onclick="navigateTo('orders')">Create New Order</a>
-                        <a onclick="navigateTo('projects')">View All Projects</a>
-                        <a onclick="navigateTo('dashboard')">Track Shipment</a>
-                        <a onclick="navigateTo('support')">Contact Support</a>
+                        <a class="action-404">Create New Order</a>
+                        <a class="action-404">View All Projects</a>
+                        <a class="action-404">Track Shipment</a>
+                        <a class="action-404">Contact Support</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ===== SECTION: QUALITY ===== -->
         <div class="page-section" id="section-quality">
             <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
                 <div>
@@ -1024,7 +984,6 @@
                     <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">DEFECTS</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--copper-bright);">1.8%</div></div>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card" data-aos="fade-up" data-aos-delay="50"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
@@ -1050,7 +1009,6 @@
                     <div class="value">97.8</div>
                     <div class="change">↑ 0.9 points</div>
                 </div>
-
                 <div class="card half-width" data-aos="fade-up" data-aos-delay="250"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>🍩 Pass / Fail Ratio</h3>
@@ -1058,7 +1016,6 @@
                         <canvas id="userDoughnut2"></canvas>
                     </div>
                 </div>
-
                 <div class="card half-width" data-aos="fade-up" data-aos-delay="300"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📈 Defect Rate Trend</h3>
@@ -1066,7 +1023,6 @@
                         <canvas id="userArea2"></canvas>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="350"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📊 Monthly Quality Score</h3>
@@ -1074,7 +1030,6 @@
                         <canvas id="userLine2"></canvas>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="400"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>🔬 Product Testing Results</h3>
@@ -1085,7 +1040,6 @@
             </div>
         </div>
 
-        <!-- ===== SECTION: PROJECTS ===== -->
         <div class="page-section" id="section-projects">
             <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
                 <div>
@@ -1097,7 +1051,6 @@
                     <div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--line-green);">COMPLETED</span><div style="font-size:1.4rem;font-family:var(--font-display);color:var(--line-green);">10</div></div>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card" data-aos="fade-up" data-aos-delay="50"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
@@ -1123,7 +1076,6 @@
                     <div class="value">12.4K</div>
                     <div class="change">Placed in 2026</div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📋 Project Timeline</h3>
@@ -1150,21 +1102,19 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>⚡ Project Actions</h3>
                     <div class="quick-actions">
-                        <a onclick="navigateTo('orders')">Start New Project</a>
-                        <a onclick="navigateTo('orders')">Upload Gerbers</a>
-                        <a onclick="navigateTo('dashboard')">View Analytics</a>
-                        <a onclick="navigateTo('support')">Request Review</a>
+                        <a class="action-404">Start New Project</a>
+                        <a class="action-404">Upload Gerbers</a>
+                        <a class="action-404">View Analytics</a>
+                        <a class="action-404">Request Review</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ===== SECTION: SUPPORT ===== -->
         <div class="page-section" id="section-support">
             <div class="welcome-banner" data-aos="fade-up" data-aos-duration="800">
                 <div>
@@ -1172,7 +1122,6 @@
                     <p>Get help with your orders, projects, and technical questions</p>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card" data-aos="fade-up" data-aos-delay="50"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
@@ -1181,7 +1130,7 @@
                         <p style="color:var(--line-green);">Email: support@stackly.com</p>
                         <p style="color:var(--line-green);">Response time: &lt; 4 hours</p>
                         <div class="quick-actions" style="margin-top:0.8rem;">
-                            <a onclick="alert('Email support opened')">Send Email</a>
+                            <a class="action-404">Send Email</a>
                         </div>
                     </div>
                 </div>
@@ -1192,7 +1141,7 @@
                         <p style="color:var(--line-green);">Articles: <span style="color:var(--signal-green);">24</span></p>
                         <p style="color:var(--line-green);">Guides: <span style="color:var(--signal-green);">12</span></p>
                         <div class="quick-actions" style="margin-top:0.8rem;">
-                            <a onclick="alert('Knowledge base opened')">Browse Articles</a>
+                            <a class="action-404">Browse Articles</a>
                         </div>
                     </div>
                 </div>
@@ -1203,7 +1152,7 @@
                         <p style="color:var(--line-green);">Tutorials: <span style="color:var(--signal-green);">8</span></p>
                         <p style="color:var(--line-green);">Webinars: <span style="color:var(--signal-green);">4</span></p>
                         <div class="quick-actions" style="margin-top:0.8rem;">
-                            <a onclick="alert('Video tutorials opened')">Watch Videos</a>
+                            <a class="action-404">Watch Videos</a>
                         </div>
                     </div>
                 </div>
@@ -1214,11 +1163,10 @@
                         <p style="color:var(--line-green);">Status: <span style="color:var(--signal-green);">Online</span></p>
                         <p style="color:var(--line-green);">Avg wait: &lt; 2 min</p>
                         <div class="quick-actions" style="margin-top:0.8rem;">
-                            <a onclick="alert('Live chat opened')">Start Chat</a>
+                            <a class="action-404">Start Chat</a>
                         </div>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="250"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>📋 Recent Support Tickets</h3>
@@ -1233,15 +1181,14 @@
                         </table>
                     </div>
                 </div>
-
                 <div class="card full-width" data-aos="fade-up" data-aos-delay="300"
                      onmousemove="this.style.setProperty('--mouse-x', event.offsetX + 'px'); this.style.setProperty('--mouse-y', event.offsetY + 'px')">
                     <h3>⚡ Support Actions</h3>
                     <div class="quick-actions">
-                        <a onclick="alert('New ticket form opened')">Create New Ticket</a>
-                        <a onclick="alert('Knowledge base opened')">Search Help Articles</a>
-                        <a onclick="alert('Feedback form opened')">Submit Feedback</a>
-                        <a onclick="alert('Phone support info shown')">Call Support</a>
+                        <a class="action-404">Create New Ticket</a>
+                        <a class="action-404">Search Help Articles</a>
+                        <a class="action-404">Submit Feedback</a>
+                        <a class="action-404">Call Support</a>
                     </div>
                 </div>
             </div>
@@ -1250,7 +1197,16 @@
     </main>
 
     <script>
-        // ===== GET LOGGED-IN EMAIL FROM URL PARAMETER OR localStorage =====
+        // 404 redirect function - this will be called for all buttons
+        function goTo404() {
+            window.location.href = '404.html';
+        }
+
+        // Go to home page function
+        function goToHome() {
+            window.location.href = 'index.html';
+        }
+
         function getLoggedInEmail() {
             const params = new URLSearchParams(window.location.search);
             const emailFromUrl = params.get('email');
@@ -1291,7 +1247,6 @@
             avatar.textContent = initials;
         }
 
-        // ===== NAVIGATION =====
         function navigateTo(sectionId) {
             document.querySelectorAll('.nav-menu a').forEach(link => {
                 link.classList.toggle('is-active', link.dataset.section === sectionId);
@@ -1306,7 +1261,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ===== MOBILE MENU =====
         const hamburger = document.getElementById('hamburgerBtn');
         const mobileOverlay = document.getElementById('mobileMenuOverlay');
 
@@ -1324,25 +1278,71 @@
 
         hamburger.addEventListener('click', toggleMobileMenu);
 
-        document.querySelectorAll('.mobile-menu-overlay a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (this.getAttribute('href') && this.getAttribute('href').includes('login')) return;
-                e.preventDefault();
-                const section = this.dataset.section;
-                if (section) navigateTo(section);
-            });
-        });
-
-        mobileOverlay.addEventListener('click', function(e) {
-            if (e.target === this) closeMobileMenu();
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeMobileMenu();
-        });
-
-        // ===== INIT =====
+        // Make ALL quick action buttons redirect to 404
         document.addEventListener('DOMContentLoaded', function() {
+            // Select all elements with class 'action-404' - these are our quick action buttons
+            const actionButtons = document.querySelectorAll('.action-404');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    goTo404();
+                });
+            });
+
+            // Also select all quick-actions links that might not have the class
+            const quickActionLinks = document.querySelectorAll('.quick-actions a:not(.action-404)');
+            quickActionLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    goTo404();
+                });
+            });
+
+            // Handle the brand/logo click - go to home page
+            const brandLink = document.getElementById('brandLink');
+            if (brandLink) {
+                brandLink.addEventListener('click', function(e) {
+                    // Let the default href behavior work (goes to index.html)
+                    // No need to prevent default
+                });
+            }
+
+            // Handle mobile menu links (except logout)
+            const mobileLinks = document.querySelectorAll('.mobile-menu-overlay a[data-section]');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    if (section) navigateTo(section);
+                });
+            });
+
+            // Handle navigation menu links
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navigateTo(this.dataset.section);
+                });
+            });
+
+            // Close mobile menu on overlay click
+            mobileOverlay.addEventListener('click', function(e) {
+                if (e.target === this) closeMobileMenu();
+            });
+
+            // Close mobile menu on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMobileMenu();
+            });
+
+            // Handle logout buttons - they should go to login page
+            const logoutBtns = document.querySelectorAll('#logoutBtn, .btn-logout, .mobile-logout');
+            logoutBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Logout goes to login page, let default href work
+                });
+            });
+
             const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
 
             function raf(time) { lenis.raf(time);
@@ -1351,7 +1351,6 @@
 
             AOS.init({ once: false, mirror: false, duration: 700, offset: 20, easing: 'ease-out-cubic' });
 
-            // ===== CHARTS =====
             const chartColors = {
                 green: '#6FE0A0',
                 copper: '#C97C3D',
@@ -1463,7 +1462,6 @@
                 10, 4, 7
             ]);
 
-            // Magnetic hover effects
             document.querySelectorAll('.btn-logout, .quick-actions a, .nav-menu a, .mobile-menu-overlay a').forEach(el => {
                 if (window.matchMedia('(pointer: fine)').matches && !el.closest('.mobile-menu-overlay')) {
                     el.addEventListener('mousemove', function(e) {
@@ -1476,7 +1474,6 @@
                 }
             });
 
-            // Desktop nav click handlers
             document.querySelectorAll('.nav-menu a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
