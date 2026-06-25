@@ -307,6 +307,58 @@
             border-color: rgba(236, 231, 216, 0.15);
         }
 
+        .sidebar-toggle .hamburger-icon,
+        .sidebar-toggle .close-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .sidebar-toggle .close-icon {
+            display: none;
+        }
+
+        .sidebar-toggle.is-open .hamburger-icon {
+            display: none;
+        }
+
+        .sidebar-toggle.is-open .close-icon {
+            display: flex;
+        }
+
+        /* Stackly logo in center of mobile view */
+        .sidebar-toggle .logo-icon {
+            display: none;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--signal-green);
+            gap: 0.3rem;
+            pointer-events: none;
+        }
+
+        .sidebar-toggle .logo-icon img {
+            height: 20px;
+            width: auto;
+        }
+
+        .sidebar-toggle.is-open .logo-icon {
+            display: none;
+        }
+
+        /* When sidebar is closed on mobile, show logo in center */
+        @media (max-width: 768px) {
+            .sidebar-toggle .logo-icon {
+                display: flex;
+            }
+        }
+
         /* Main content */
         .main-content {
             flex: 1;
@@ -781,6 +833,9 @@
             }
 
             /* Sidebar mobile */
+            .sidebar-header {
+                padding-left: 4rem;
+            }
             .sidebar {
                 transform: translateX(-100%);
                 width: 280px;
@@ -889,7 +944,8 @@
 
     <!-- ===== SIDEBAR TOGGLE BUTTON (mobile) ===== -->
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
-        <span>☰</span>
+        <span class="hamburger-icon">☰</span>
+        <span class="close-icon">✕</span>
     </button>
 
     <!-- ===== MESH BG ===== -->
@@ -1336,12 +1392,14 @@
         function openSidebar() {
             sidebar.classList.add('is-open');
             sidebarOverlay.classList.add('is-open');
+            sidebarToggle.classList.add('is-open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeSidebar() {
             sidebar.classList.remove('is-open');
             sidebarOverlay.classList.remove('is-open');
+            sidebarToggle.classList.remove('is-open');
             document.body.style.overflow = '';
         }
 
